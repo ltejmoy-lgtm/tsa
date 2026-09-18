@@ -25,7 +25,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
         <small>Selective goods</small>
       </a>
 
-      <button class="location" type="button" onclick="alert('Delivery is available across India with standard & express shipping!')">
+      <button class="location" type="button" onclick="showToast('Delivery is available across India with standard and express shipping.', 'info')">
         <span class="location-pin" aria-hidden="true"></span><span>Deliver to<br><b>India</b></span>
       </button>
 
@@ -37,13 +37,17 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       <!-- User Auth State -->
       <?php if ($isLoggedIn): ?>
         <a class="login-btn" id="accountBtn" href="dashboard.php">
-          👤 <?php echo htmlspecialchars($userName); ?>
+          <span class="user-icon" aria-hidden="true"></span><?php echo htmlspecialchars($userName); ?>
         </a>
         <a class="nav-link" href="auth/logout.php">Logout</a>
       <?php else: ?>
         <a class="login-btn" id="loginBtn" href="auth/login.php">Login</a>
         <a class="nav-link" href="auth/register.php">Register</a>
       <?php endif; ?>
+
+      <button class="wishlist-btn" id="wishlistBtn" type="button" aria-label="View wishlist">
+        <span class="heart-icon" aria-hidden="true"></span><span>Wishlist</span>
+      </button>
 
       <button class="cart-btn" id="cartBtn" type="button" aria-label="View Cart">
         <span class="bag-icon" aria-hidden="true"></span> Bag <b id="cartCount">0</b>
@@ -74,10 +78,10 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
 
     <!-- Trust Row -->
     <section class="trust-row">
-      <div>🚚 <div><b>Free Delivery</b><span>On orders over ₹499</span></div></div>
-      <div>🔒 <div><b>Secure Payments</b><span>100% protected checkout</span></div></div>
-      <div>↩️ <div><b>Easy Returns</b><span>7-day hassle-free returns</span></div></div>
-      <div>⭐ <div><b>TSA Assured</b><span>Quality checked products</span></div></div>
+      <div><span class="trust-icon delivery-icon" aria-hidden="true"></span><div><b>Fast Delivery</b><span>Quick delivery across India</span></div></div>
+      <div><span class="trust-icon lock-icon" aria-hidden="true"></span><div><b>Secure Payment</b><span>Safe and protected checkout</span></div></div>
+      <div><span class="trust-icon return-icon" aria-hidden="true"></span><div><b>Easy Returns</b><span>Simple return process</span></div></div>
+      <div><span class="trust-icon quality-icon" aria-hidden="true"></span><div><b>Genuine Products</b><span>Quality you can trust</span></div></div>
     </section>
 
     <!-- Products Section -->
@@ -92,12 +96,28 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       <div class="product-grid" id="productGrid"></div>
     </section>
 
+    <!-- Today's Deals -->
+    <section class="deals-section" id="dealsSection">
+      <div class="deals-head">
+        <div>
+          <span class="eyebrow">LIMITED-TIME EDIT</span>
+          <h2>Today's Deals</h2>
+          <p>Curated prices on the pieces everyone is looking for.</p>
+        </div>
+        <div class="deal-clock" aria-label="Deals end in">
+          <span>ENDS IN</span><b id="dealHours">08</b><i>:</i><b id="dealMinutes">42</b><i>:</i><b id="dealSeconds">16</b>
+        </div>
+        <button class="view-all" type="button" onclick="showAll()">View All Deals <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="deal-grid" id="dealGrid" tabindex="0" aria-label="Today's deals"></div>
+    </section>
+
     <!-- Trending Categories -->
     <section class="section">
       <div class="section-head">
         <div>
           <h2>Trending Categories</h2>
-          <p>Explore what everyone is shopping right now</p>
+          <p>Explore the edits shaping everyday living</p>
         </div>
       </div>
       <div class="category-cards" id="categoryCards"></div>
@@ -123,7 +143,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
         <p>Your premium online marketplace for authentic electronics, lifestyle and fashion.</p>
         <div style="margin-top:14px;">
           <a href="test_db.php" style="display:inline-block;color:#60a5fa;text-decoration:none;font-size:11px;border:1px solid #1e3a8a;padding:4px 10px;border-radius:4px;">
-            🛠️ System & Database Diagnostic
+            System & Database Diagnostic
           </a>
         </div>
       </div>
@@ -163,6 +183,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
 
   <!-- ================= OVERLAYS & MODALS ================= -->
   <div class="overlay" id="overlay"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <!-- Cart Drawer -->
   <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
@@ -193,7 +214,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
         <div class="detail-offer" id="detailOffer"></div>
         <p id="detailDescription"></p>
         <div class="delivery-box">
-          <b>🚚 Delivery Availability</b>
+          <b><span class="inline-icon delivery-icon" aria-hidden="true"></span> Delivery Availability</b>
           <div class="delivery-row">
             <input id="pincodeInput" maxlength="6" placeholder="Enter 6-digit pincode" pattern="[0-9]*">
             <button type="button" onclick="checkDelivery()">Check</button>
@@ -265,9 +286,9 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
         <div class="summary-line"><span>Delivery</span><b id="checkoutDelivery">FREE</b></div>
         <div class="summary-line total"><span>Total Payable</span><b id="checkoutTotal">₹0</b></div>
         <div class="secure-note">
-          🔒 256-bit SSL encrypted checkout<br>
-          🛡️ TSA 100% Buyer Protection Guarantee<br>
-          ↩️ 7-day hassle-free replacement or refund
+          <span class="inline-icon lock-icon" aria-hidden="true"></span> 256-bit SSL encrypted checkout<br>
+          <span class="inline-icon quality-icon" aria-hidden="true"></span> TSA 100% Buyer Protection Guarantee<br>
+          <span class="inline-icon return-icon" aria-hidden="true"></span> 7-day hassle-free replacement or refund
         </div>
       </div>
     </div>

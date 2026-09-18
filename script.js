@@ -9,6 +9,8 @@ let products = [];
 let visibleCount = 50;
 let currentCategory = "Top Offers";
 let currentProduct = null;
+let wishlist = [];
+let toastTimer = null;
 
 // Initialize cart from localStorage
 try {
@@ -16,6 +18,13 @@ try {
   cart = Array.isArray(savedCart) ? savedCart : [];
 } catch (error) {
   cart = [];
+}
+
+try {
+  const savedWishlist = JSON.parse(localStorage.getItem("tsa_wishlist") || "[]");
+  wishlist = Array.isArray(savedWishlist) ? savedWishlist.map(String) : [];
+} catch (error) {
+  wishlist = [];
 }
 
 // ----------------------------------------------------------
@@ -282,7 +291,39 @@ function addToCart(product, qty = 1) {
 
   saveCart();
   renderCart();
+  showToast(`${item.name} added to your bag.`, "success");
   openCart();
+}
+
+function showToast(message, type = "info") {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = `toast show ${type}`;
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 3400);
+}
+
+function toggleWishlist(event, id, button) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  const productId = String(id);
+  const index = wishlist.indexOf(productId);
+  if (index >= 0) {
+    wishlist.splice(index, 1);
+    if (button) button.classList.remove("is-saved");
+    showToast("Removed from your wishlist.", "info");
+  } else {
+    wishlist.push(productId);
+    if (button) button.classList.add("is-saved");
+    showToast("Saved to your wishlist.", "success");
+  }
+
+  localStorage.setItem("tsa_wishlist", JSON.stringify(wishlist));
 }
 
 function addToCartById(id, qty = 1) {
@@ -324,7 +365,7 @@ function renderCart() {
   if (!cart.length) {
     itemsEl.innerHTML = `
       <div style="text-align:center;padding:48px 16px;color:#7a8798;">
-        <div style="font-size:42px;margin-bottom:12px;">🛒</div>
+        <div class="empty-bag-icon" aria-hidden="true"></div>
         <b style="color:#1e293b;display:block;margin-bottom:6px;">Your cart is empty</b>
         <span style="font-size:13px;">Add items to your cart to start checkout</span>
       </div>
@@ -399,6 +440,7 @@ async function loadCatalog() {
         window.products = products;
         renderNav();
         renderCategoryCards();
+        renderDeals();
         filterCat("Top Offers");
         return;
       }
@@ -413,6 +455,7 @@ async function loadCatalog() {
   window.products = products;
   renderNav();
   renderCategoryCards();
+  renderDeals();
   filterCat("Top Offers");
 }
 
@@ -445,7 +488,7 @@ function renderProducts(list = products, append = false) {
     return `
       <article class="product" data-product-id="${p.id}" onclick="openProduct('${p.id}')">
         ${off > 0 ? `<span class="badge">${off}% OFF</span>` : ''}
-        <button class="heart" type="button" onclick="event.stopPropagation();this.textContent=this.textContent==='♡'?'♥':'♡'" aria-label="Add to wishlist">♡</button>
+        <button class="heart ${wishlist.includes(String(p.id)) ? 'is-saved' : ''}" type="button" onclick="toggleWishlist(event, '${p.id}', this)" aria-label="Add ${p.name} to wishlist"><span class="heart-icon" aria-hidden="true"></span></button>
         <div class="product-img">
           <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80'">
         </div>
@@ -457,7 +500,7 @@ function renderProducts(list = products, append = false) {
             ${money(price)}
             ${oldPrice > price ? `<span class="old">${money(oldPrice)}</span><span class="off">${off}% off</span>` : ''}
           </div>
-          <button class="add" type="button" data-action="add-cart" data-id="${p.id}">Add to Cart</button>
+          <button class="add" type="button" onclick="event.stopPropagation()" data-action="add-cart" data-id="${p.id}">Add to Cart</button>
         </div>
       </article>
     `;
@@ -479,12 +522,51 @@ function renderNav() {
 function renderCategoryCards() {
   const cards = document.getElementById("categoryCards");
   if (!cards) return;
+  const descriptions = {
+    Mobiles: "Smart devices & accessories",
+    Electronics: "The tools that move you",
+    Fashion: "Trending everyday styles",
+    Footwear: "Made for every step",
+    Home: "Make your space better",
+    Beauty: "Rituals worth keeping"
+  };
   cards.innerHTML = categories.map(c => `
-    <div class="category-card" onclick="filterCat('${c[0]}')">
+    <div class="category-card" onclick="filterCat('${c[0]}')" role="button" tabindex="0">
       <img src="${c[1]}" alt="${c[0]}" loading="lazy">
-      <span>${c[0]} →</span>
+      <div class="category-copy"><span>${c[0]} <b aria-hidden="true">→</b></span><small>${descriptions[c[0]] || "Curated for you"}</small></div>
     </div>
   `).join("");
+}
+
+function renderDeals() {
+  const dealGrid = document.getElementById("dealGrid");
+  if (!dealGrid) return;
+
+  const deals = [...allProducts]
+    .sort((a, b) => Number(b.discount || 0) - Number(a.discount || 0))
+    .slice(0, 6);
+
+  dealGrid.innerHTML = deals.map(p => `
+    <article class="deal-card" onclick="openProduct('${p.id}')">
+      <div class="deal-image"><span>${Number(p.discount || 0)}% OFF</span><img src="${p.img}" alt="${p.name}" loading="lazy"></div>
+      <div class="deal-info"><small>${p.cat}</small><h3>${p.name}</h3><strong>${money(p.price)}</strong><del>${money(p.old)}</del><button type="button" onclick="event.stopPropagation()" data-action="add-cart" data-id="${p.id}">Add to bag</button></div>
+    </article>
+  `).join("");
+}
+
+function startDealClock() {
+  let remaining = 8 * 60 * 60 + 42 * 60 + 16;
+  const update = () => {
+    const hours = document.getElementById("dealHours");
+    const minutes = document.getElementById("dealMinutes");
+    const seconds = document.getElementById("dealSeconds");
+    if (hours) hours.textContent = String(Math.floor(remaining / 3600)).padStart(2, "0");
+    if (minutes) minutes.textContent = String(Math.floor((remaining % 3600) / 60)).padStart(2, "0");
+    if (seconds) seconds.textContent = String(remaining % 60).padStart(2, "0");
+    remaining = remaining > 0 ? remaining - 1 : 8 * 60 * 60 + 42 * 60 + 16;
+  };
+  update();
+  window.setInterval(update, 1000);
 }
 
 function filterCat(cat) {
@@ -610,7 +692,7 @@ function buyCurrentProduct() {
 // ----------------------------------------------------------
 function openCheckout() {
   if (!cart.length) {
-    alert("Your cart is empty. Add a product first.");
+    showToast("Your bag is empty. Add a product first.", "info");
     return;
   }
   closeCart();
@@ -671,21 +753,21 @@ function validateCheckout() {
     const el = document.getElementById(id);
     if (!el || !el.value.trim()) {
       if (el) el.focus();
-      alert(`Please enter your ${label}.`);
+      showToast(`Please enter your ${label}.`, "error");
       return false;
     }
   }
 
   const phone = document.getElementById("customerPhone").value.replace(/[^0-9]/g, "");
   if (phone.length !== 10) {
-    alert("Please enter a valid 10-digit mobile number.");
+    showToast("Please enter a valid 10-digit mobile number.", "error");
     document.getElementById("customerPhone").focus();
     return false;
   }
 
   const pin = document.getElementById("customerPin").value.trim();
   if (!/^\d{6}$/.test(pin)) {
-    alert("Please enter a valid 6-digit Indian pincode.");
+    showToast("Please enter a valid 6-digit Indian pincode.", "error");
     document.getElementById("customerPin").focus();
     return false;
   }
@@ -807,6 +889,7 @@ function initShoppingUI() {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchInput");
   const checkoutTrigger = document.querySelector(".checkout");
+  const wishlistBtn = document.getElementById("wishlistBtn");
 
   if (cartBtn) cartBtn.onclick = openCart;
   if (detailAdd) {
@@ -831,6 +914,7 @@ function initShoppingUI() {
   }
 
   if (searchBtn) searchBtn.onclick = search;
+  if (wishlistBtn) wishlistBtn.onclick = () => showToast(`${wishlist.length} item${wishlist.length === 1 ? '' : 's'} saved in your wishlist.`, "info");
   if (searchInput) {
     searchInput.addEventListener("keydown", e => {
       if (e.key === "Enter") {
@@ -844,7 +928,11 @@ function initShoppingUI() {
 document.addEventListener("DOMContentLoaded", function () {
   initShoppingUI();
   renderCart();
+  startDealClock();
   loadCatalog();
+  window.addEventListener("scroll", () => {
+    document.querySelector(".topbar")?.classList.toggle("is-scrolled", window.scrollY > 12);
+  }, { passive: true });
 });
 
 // Event delegation for cart actions & product adding
