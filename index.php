@@ -68,7 +68,10 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
         <span class="eyebrow">TSA BIG SAVINGS</span>
         <h1>Everything you need.<br><strong>Better prices.</strong></h1>
         <p>Discover trending electronics, fashion, home essentials, and everyday favorites with fast delivery.</p>
-        <button class="shop-now" type="button" onclick="scrollToProducts()">Shop Now →</button>
+        <div class="hero-actions">
+          <button class="shop-now" type="button" onclick="scrollToProducts()">Shop Now <span aria-hidden="true">→</span></button>
+          <button class="hero-secondary" type="button" onclick="scrollToCategories()">Explore Collection <span aria-hidden="true">→</span></button>
+        </div>
       </div>
       <div class="hero-art">
         <div class="deal-tag">UP TO<br><strong>70% OFF</strong></div>
@@ -85,11 +88,23 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
     </section>
 
     <!-- Products Section -->
+    <section class="section" id="categorySection">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">DISCOVER YOUR NEXT</span>
+          <h2>Shop by Category</h2>
+          <p>Explore the edits shaping everyday living</p>
+        </div>
+      </div>
+      <div class="category-cards" id="categoryCards"></div>
+    </section>
+
     <section class="section" id="productsSection">
       <div class="section-head">
         <div>
-          <h2>Best Deals</h2>
-          <p>Top picks from our catalog at prices you'll love</p>
+          <span class="eyebrow">CURATED FOR YOU</span>
+          <h2>Trending Now</h2>
+          <p>Products worth making room for</p>
         </div>
         <button class="view-all" type="button" onclick="showAll()">View All →</button>
       </div>
@@ -101,37 +116,42 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       <div class="deals-head">
         <div>
           <span class="eyebrow">LIMITED-TIME EDIT</span>
-          <h2>Today's Deals</h2>
+          <h2>Deals That Don't Wait</h2>
           <p>Curated prices on the pieces everyone is looking for.</p>
         </div>
         <div class="deal-clock" aria-label="Deals end in">
           <span>ENDS IN</span><b id="dealHours">08</b><i>:</i><b id="dealMinutes">42</b><i>:</i><b id="dealSeconds">16</b>
         </div>
-        <button class="view-all" type="button" onclick="showAll()">View All Deals <span aria-hidden="true">→</span></button>
+        <div class="deal-actions">
+          <button class="carousel-arrow" type="button" onclick="scrollDeals(-1)" aria-label="Previous deals">←</button>
+          <button class="carousel-arrow" type="button" onclick="scrollDeals(1)" aria-label="Next deals">→</button>
+          <button class="view-all" type="button" onclick="showAll()">View All Deals <span aria-hidden="true">→</span></button>
+        </div>
       </div>
       <div class="deal-grid" id="dealGrid" tabindex="0" aria-label="Today's deals"></div>
     </section>
 
-    <!-- Trending Categories -->
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>Trending Categories</h2>
-          <p>Explore the edits shaping everyday living</p>
-        </div>
-      </div>
-      <div class="category-cards" id="categoryCards"></div>
-    </section>
-
-    <!-- Promo Banner -->
-    <section class="promo">
+    <!-- Editorial Brand Section -->
+    <section class="promo" id="editorialSection">
       <div>
-        <span class="eyebrow">TSA EXCLUSIVE</span>
-        <h2>Upgrade your everyday.</h2>
-        <p>Fresh arrivals across smartphones, audio gear, apparel, and lifestyle accessories.</p>
-        <button class="shop-now" type="button" onclick="scrollToProducts()">Explore Deals →</button>
+        <span class="eyebrow">THE EVERYDAY EDIT</span>
+        <h2>Tech.<br>Style.<br>Home.<br>Life.</h2>
+        <p>A considered edit of useful objects, personal style, and the details that make an everyday feel like yours.</p>
+        <button class="shop-now" type="button" onclick="scrollToProducts()">Explore <span aria-hidden="true">→</span></button>
       </div>
       <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85" alt="Watch and accessories" loading="lazy">
+    </section>
+
+    <section class="section" id="justForYouSection">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">A LITTLE MORE PERSONAL</span>
+          <h2>Just for You</h2>
+          <p>A fresh mix from the TSA edit</p>
+        </div>
+        <button class="view-all" type="button" onclick="showAll()">View All <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="product-grid just-grid" id="justForYouGrid"></div>
     </section>
   </main>
 
@@ -141,11 +161,6 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       <div>
         <div class="footer-logo"><span class="footer-mark">TS</span><span>TSA<span>.</span></span><small>Selective goods</small></div>
         <p>Your premium online marketplace for authentic electronics, lifestyle and fashion.</p>
-        <div style="margin-top:14px;">
-          <a href="test_db.php" style="display:inline-block;color:#60a5fa;text-decoration:none;font-size:11px;border:1px solid #1e3a8a;padding:4px 10px;border-radius:4px;">
-            System & Database Diagnostic
-          </a>
-        </div>
       </div>
       <div>
         <h4>ABOUT</h4>
@@ -177,7 +192,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       </div>
     </div>
     <div class="footer-bottom">
-      © 2026 TSA Shop. All rights reserved. Realistic Marketplace Catalog.
+      © 2026 TSA. Selective Goods. All rights reserved.
     </div>
   </footer>
 
@@ -236,20 +251,21 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       <div>
         <div class="checkout-title">TSA Fast Checkout</div>
         <div class="stepper">
-          <span class="active">1. Address</span>
-          <span>2. Delivery</span>
-          <span>3. Payment</span>
+          <span class="active">01 Address</span>
+          <span>02 Delivery</span>
+          <span>03 Payment</span>
+          <span>04 Review</span>
         </div>
 
         <h3>Delivery Address</h3>
         <div class="form-grid">
-          <input id="customerName" placeholder="Full name" value="<?php echo htmlspecialchars($userName); ?>" required>
-          <input id="customerPhone" placeholder="10-digit mobile number" maxlength="10" required>
-          <input id="customerPin" placeholder="6-digit pincode" maxlength="6" required>
-          <input id="customerCity" placeholder="City" required>
-          <input id="customerState" placeholder="State" required>
-          <input id="customerHouse" placeholder="House / Flat / Building No." required>
-          <textarea id="customerAddress" placeholder="Area, colony, street, landmark" required></textarea>
+          <input id="customerName" aria-label="Full name" placeholder="Full name" value="<?php echo htmlspecialchars($userName); ?>" required>
+          <input id="customerPhone" aria-label="10-digit mobile number" placeholder="10-digit mobile number" maxlength="10" required>
+          <input id="customerPin" aria-label="6-digit pincode" placeholder="6-digit pincode" maxlength="6" required>
+          <input id="customerCity" aria-label="City" placeholder="City" required>
+          <input id="customerState" aria-label="State" placeholder="State" required>
+          <input id="customerHouse" aria-label="House or building number" placeholder="House / Flat / Building No." required>
+          <textarea id="customerAddress" aria-label="Full delivery address" placeholder="Area, colony, street, landmark" required></textarea>
         </div>
 
         <h3>Delivery Options</h3>
@@ -276,7 +292,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
           <span><b>Credit / Debit Card / Net Banking</b><small>All major Indian banks accepted</small></span>
         </label>
 
-        <button class="place-order" type="button" onclick="placeOrder()">Place Order</button>
+        <button class="place-order" type="button" onclick="placeOrder()">Place Order <span aria-hidden="true">→</span></button>
       </div>
 
       <div class="checkout-summary">

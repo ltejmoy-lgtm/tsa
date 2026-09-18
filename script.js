@@ -441,6 +441,7 @@ async function loadCatalog() {
         renderNav();
         renderCategoryCards();
         renderDeals();
+        renderJustForYou();
         filterCat("Top Offers");
         return;
       }
@@ -456,14 +457,15 @@ async function loadCatalog() {
   renderNav();
   renderCategoryCards();
   renderDeals();
+  renderJustForYou();
   filterCat("Top Offers");
 }
 
 // ----------------------------------------------------------
 // Product Grid & Category Filters
 // ----------------------------------------------------------
-function renderProducts(list = products, append = false) {
-  const grid = document.getElementById("productGrid");
+function renderProducts(list = products, append = false, targetId = "productGrid") {
+  const grid = document.getElementById(targetId);
   if (!grid) return;
 
   if (!append) visibleCount = 50;
@@ -554,6 +556,15 @@ function renderDeals() {
   `).join("");
 }
 
+function renderJustForYou() {
+  renderProducts([...allProducts].slice(0, 8), false, "justForYouGrid");
+}
+
+function scrollDeals(direction) {
+  const rail = document.getElementById("dealGrid");
+  if (rail) rail.scrollBy({ left: direction * rail.clientWidth * 0.82, behavior: "smooth" });
+}
+
 function startDealClock() {
   let remaining = 8 * 60 * 60 + 42 * 60 + 16;
   const update = () => {
@@ -591,7 +602,7 @@ function filterCat(cat) {
   const titleEl = document.querySelector("#productsSection h2");
   const metaEl = document.querySelector("#productsSection .section-head p");
 
-  if (titleEl) titleEl.textContent = cat === "Top Offers" ? "Best Deals" : `${cat} Catalog`;
+  if (titleEl) titleEl.textContent = cat === "Top Offers" ? "Trending Now" : `${cat} Catalog`;
   if (metaEl) metaEl.textContent = cat === "Top Offers" ? "Top picks from our catalog at prices you'll love" : `Explore ${found.length} items in ${cat}`;
 
   renderProducts(found);
@@ -870,7 +881,7 @@ function search() {
   const titleEl = document.querySelector("#productsSection h2");
   const metaEl = document.querySelector("#productsSection .section-head p");
 
-  if (titleEl) titleEl.textContent = q ? `Search: "${q}"` : "Best Deals";
+  if (titleEl) titleEl.textContent = q ? `Search: "${q}"` : "Trending Now";
   if (metaEl) metaEl.textContent = `${found.length} product${found.length === 1 ? '' : 's'} found`;
 
   renderProducts(found);
