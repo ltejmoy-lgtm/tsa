@@ -21,7 +21,7 @@ try {
     $params = [];
 
     if ($category !== "" && strtolower($category) !== "top offers" && strtolower($category) !== "all") {
-        $conditions[] = "(c.name = ? OR c.slug = ?)";
+        $conditions[] = "(c.name = ? OR LOWER(REPLACE(c.name, ' ', '-')) = ?)";
         $params[] = $category;
         $params[] = strtolower($category);
     }
