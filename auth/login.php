@@ -81,14 +81,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         body {
             margin: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f0f4fc 0%, #e6eefb 100%);
+            background: #F8F9F5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 24px 16px;
-            color: #172337;
+            color: #0B1220;
         }
         .back-link {
             display: inline-flex;
@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             margin-bottom: 18px;
             transition: color 0.15s ease;
         }
-        .back-link:hover { color: #2874f0; }
+        .back-link:hover { color: #173B32; }
         .auth-card {
             width: 100%;
             max-width: 440px;
@@ -118,12 +118,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .logo {
             font-size: 30px;
             font-weight: 800;
-            color: #2874f0;
+            color: #0B1220;
             letter-spacing: -0.5px;
             text-decoration: none;
             display: inline-block;
         }
-        .logo span { color: #ffb703; }
+        .logo span { color: #C7F36B; }
         .logo small {
             font-size: 12px;
             font-weight: 600;
@@ -163,13 +163,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
-            color: #0f172a;
+            color: #0B1220;
             background: #fff;
             transition: all 0.2s ease;
         }
         input:focus {
             outline: none;
-            border-color: #2874f0;
+            border-color: #C7F36B;
             box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.15);
         }
         .toggle-pw {
@@ -191,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             padding: 13px;
             border: none;
             border-radius: 8px;
-            background: #2874f0;
+            background: #0B1220;
             color: white;
             font-size: 15px;
             font-weight: 700;
@@ -235,7 +235,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             color: #64748b;
         }
         .auth-footer a {
-            color: #2874f0;
+            color: #173B32;
             font-weight: 700;
             text-decoration: none;
         }

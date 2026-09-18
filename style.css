@@ -1810,3 +1810,86 @@ footer a, footer p { color: #b8afa8; font-size: 11px; }
   .deal-image { height: 230px; }
   .toast { right: 16px; bottom: 16px; }
 }
+
+/* ================= MIDNIGHT LIME COLOR DIRECTION ================= */
+:root {
+  --primary: #0B1220;
+  --primary-hover: #173B32;
+  --accent: #C7F36B;
+  --accent-hover: #b1df52;
+  --deep-green: #173B32;
+  --gold: #C7F36B;
+  --success: #173B32;
+  --danger: #a5483c;
+  --bg-page: #F8F9F5;
+  --bg-card: #FFFFFF;
+  --text-main: #0B1220;
+  --text-muted: #667085;
+  --border-light: #E6E9E2;
+  --shadow-sm: 0 1px 0 rgba(11, 18, 32, .08);
+  --shadow-md: 0 14px 35px rgba(11, 18, 32, .13);
+  --shadow-lg: 0 22px 70px rgba(11, 18, 32, .2);
+}
+
+body { background: var(--bg-page); }
+.topbar, .categories { background: var(--bg-page); }
+.topbar.is-scrolled { background: rgba(248, 249, 245, .96); box-shadow: 0 8px 24px rgba(11, 18, 32, .08); }
+.logo-mark { background: var(--primary); color: var(--bg-page); }
+.logo-mark:after { background: var(--accent); }
+.logo-mark i, .logo-word > span { color: var(--accent); }
+.search-wrap { border-color: #98a2b3; }
+.search-wrap input::placeholder { color: var(--text-muted); }
+.category-inner { background: var(--bg-page); }
+.cat-item { color: var(--text-muted); }
+.cat-item:hover, .cat-item.active { color: var(--primary); box-shadow: inset 0 -2px var(--accent); }
+
+.hero { background: var(--primary); }
+.hero-copy { background: linear-gradient(90deg, #0B1220 0%, #0B1220 76%, rgba(11, 18, 32, .1) 100%); }
+.hero h1 { color: var(--bg-page); }
+.hero h1 strong, .eyebrow { color: var(--accent); }
+.hero p { color: #c4cbd5; }
+.shop-now { background: var(--accent); color: var(--primary); }
+.shop-now:hover { background: var(--accent-hover); color: var(--primary); }
+.deal-tag { background: var(--accent); color: var(--primary); }
+
+.trust-row { background: var(--bg-card); border-color: var(--border-light); }
+.trust-row > div { border-color: var(--border-light); }
+.trust-icon, .inline-icon, .location-pin { color: var(--primary); }
+.trust-row b { color: var(--primary); }
+.trust-row span { color: var(--text-muted); }
+
+.section-head { border-color: var(--primary); }
+.section-head p, .section h2, .product-name { color: var(--primary); }
+.view-all { color: var(--primary); border-color: var(--primary); }
+.view-all:hover { color: var(--deep-green); }
+.product { background: var(--bg-card); }
+.product-img { background: #eef1eb; }
+.badge, .add { background: var(--primary); color: var(--bg-page); }
+.badge { color: var(--accent); }
+.add:hover { background: var(--accent); color: var(--primary); }
+.product-cat, .price .off, .rating span { color: var(--primary-hover); }
+.heart.is-saved, .heart.is-saved .heart-icon { color: var(--primary-hover); }
+
+.deals-section, footer, .promo { background: var(--primary); color: var(--bg-page); }
+.deals-head { border-color: #344054; }
+.deals-section .eyebrow, .deals-section .deal-clock, .deal-clock i, .category-copy b, footer h4 { color: var(--accent); }
+.deals-section p, .promo p, footer a, footer p { color: #aab4c3; }
+.deal-clock b { background: var(--primary-hover); color: var(--accent); }
+.deals-section .view-all { color: var(--accent); border-color: var(--accent); }
+.deal-card { background: var(--bg-card); }
+.deal-image { background: #eef1eb; }
+.deal-image > span { background: var(--accent); color: var(--primary); }
+.deal-info small { color: var(--primary-hover); }
+.deal-info button { background: var(--primary); color: var(--accent); }
+.deal-info button:hover { background: var(--accent); color: var(--primary); }
+.promo .eyebrow { color: var(--accent); }
+.footer-main { border-color: #344054; }
+.footer-logo > span:last-of-type > span { color: var(--accent); }
+.footer-mark { background: var(--accent); color: var(--primary); }
+.footer-logo small, .footer-bottom { color: #8d99ab; }
+.footer-bottom { border-color: #344054; }
+
+.toast { background: var(--primary); color: var(--bg-page); }
+.toast.success { border-color: var(--accent); }
+.toast.error { border-color: #e08472; }
+.toast.info { border-color: var(--accent); }
