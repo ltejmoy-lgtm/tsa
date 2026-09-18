@@ -1,0 +1,6 @@
+.vscode/
+.env
+config/database.local.php
+*.log
+vendor/
+node_modules/
