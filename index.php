@@ -19,7 +19,11 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
   <!-- ================= HEADER ================= -->
   <header class="topbar">
     <div class="nav">
-      <a class="logo" href="index.php">TSA<span>.</span><small>Shop</small></a>
+      <a class="logo" href="index.php" aria-label="TSA Shop">
+        <span class="logo-mark" aria-hidden="true"><b>T</b><i>S</i></span>
+        <span class="logo-word">TSA<span>.</span></span>
+        <small>Selective goods</small>
+      </a>
 
       <button class="location" type="button" onclick="alert('Delivery is available across India with standard & express shipping!')">
         📍 <span>Deliver to<br><b>India</b></span>
@@ -115,7 +119,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
   <footer>
     <div class="footer-main">
       <div>
-        <div class="footer-logo">TSA<span>.</span><small>Shop</small></div>
+        <div class="footer-logo"><span class="footer-mark">TS</span><span>TSA<span>.</span></span><small>Selective goods</small></div>
         <p>Your premium online marketplace for authentic electronics, lifestyle and fashion.</p>
         <div style="margin-top:14px;">
           <a href="test_db.php" style="display:inline-block;color:#60a5fa;text-decoration:none;font-size:11px;border:1px solid #1e3a8a;padding:4px 10px;border-radius:4px;">
