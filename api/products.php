@@ -1,10 +1,40 @@
 <?php
 
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
 
-require_once "../config/database.php";
+require_once __DIR__ . "/../config/database.php";
+
+if (!$db_connected || !$pdo) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection unavailable.",
+        "products" => []
+    ]);
+    exit;
+}
 
 try {
+    $category = trim($_GET["category"] ?? "");
+    $search = trim($_GET["search"] ?? "");
+
+    $conditions = ["p.status = 'active'"];
+    $params = [];
+
+    if ($category !== "" && strtolower($category) !== "top offers" && strtolower($category) !== "all") {
+        $conditions[] = "(c.name = ? OR c.slug = ?)";
+        $params[] = $category;
+        $params[] = strtolower($category);
+    }
+
+    if ($search !== "") {
+        $conditions[] = "(p.name LIKE ? OR p.brand LIKE ? OR p.description LIKE ?)";
+        $wildcard = "%{$search}%";
+        $params[] = $wildcard;
+        $params[] = $wildcard;
+        $params[] = $wildcard;
+    }
+
+    $whereClause = implode(" AND ", $conditions);
 
     $sql = "
         SELECT
@@ -20,32 +50,28 @@ try {
             p.image,
             p.rating,
             p.status,
-            c.name AS category_name
+            COALESCE(c.name, 'Other') AS category_name
         FROM products p
         LEFT JOIN categories c
             ON p.category_id = c.id
-        WHERE p.status = 'active'
+        WHERE {$whereClause}
         ORDER BY p.id DESC
     ";
 
     $stmt = $pdo->prepare($sql);
-
-    $stmt->execute();
-
+    $stmt->execute($params);
     $products = $stmt->fetchAll();
 
     echo json_encode([
         "success" => true,
+        "count" => count($products),
         "products" => $products
     ]);
 
 } catch (PDOException $e) {
-
     echo json_encode([
         "success" => false,
-        "message" => $e->getMessage()
+        "message" => "Catalog query error: " . $e->getMessage(),
+        "products" => []
     ]);
-
 }
-
-?>
