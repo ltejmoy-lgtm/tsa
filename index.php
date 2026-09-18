@@ -26,12 +26,12 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       </a>
 
       <button class="location" type="button" onclick="alert('Delivery is available across India with standard & express shipping!')">
-        📍 <span>Deliver to<br><b>India</b></span>
+        <span class="location-pin" aria-hidden="true"></span><span>Deliver to<br><b>India</b></span>
       </button>
 
       <div class="search-wrap">
         <input id="searchInput" type="search" placeholder="Search for products, brands and more" autocomplete="off">
-        <button id="searchBtn" type="button" aria-label="Search">🔍</button>
+        <button id="searchBtn" type="button" aria-label="Search">⌕</button>
       </div>
 
       <!-- User Auth State -->
@@ -46,7 +46,7 @@ $userName = $isLoggedIn ? $_SESSION["user_name"] : "";
       <?php endif; ?>
 
       <button class="cart-btn" id="cartBtn" type="button" aria-label="View Cart">
-        🛒 Cart <b id="cartCount">0</b>
+        <span class="bag-icon" aria-hidden="true"></span> Bag <b id="cartCount">0</b>
       </button>
     </div>
   </header>
