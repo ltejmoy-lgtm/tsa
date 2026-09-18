@@ -230,6 +230,10 @@ if (!empty($userName)) {
             padding: 3px 10px;
             border-radius: 20px;
         }
+        .order-status.cancelled {
+            background: #fef2f2;
+            color: #b42318;
+        }
         .order-items {
             display: flex;
             flex-direction: column;
@@ -264,6 +268,21 @@ if (!empty($userName)) {
             font-size: 13px;
         }
         .order-total { font-size: 15px; font-weight: 800; color: #0f172a; }
+        .cancel-order {
+            margin-top: 14px;
+            min-height: 40px;
+            padding: 8px 14px;
+            border: 1px solid #b42318;
+            background: transparent;
+            color: #b42318;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s ease, color .2s ease;
+        }
+        .cancel-order:hover { background: #b42318; color: #fff; }
+        .cancel-order:disabled { opacity: .6; cursor: wait; }
 
         .empty-orders {
             text-align: center;
@@ -416,6 +435,10 @@ if (!empty($userName)) {
                     </div>
                 `).join('') : '<p style="font-size:12px;color:#64748b;">Order details recorded</p>';
 
+                const status = String(order.status || order.order_status || 'confirmed').toLowerCase();
+                const canCancel = ['pending', 'confirmed', 'processing'].includes(status);
+                const statusLabel = status === 'cancelled' ? 'Cancelled' : status === 'delivered' ? 'Delivered' : 'Confirmed';
+
                 return `
                     <div class="order-card">
                         <div class="order-header">
@@ -424,7 +447,7 @@ if (!empty($userName)) {
                                 <div class="order-date">Expected Delivery: ${order.date || '3-5 business days'}</div>
                             </div>
                             <div>
-                                <span class="order-status">✓ Confirmed</span>
+                                <span class="order-status ${status === 'cancelled' ? 'cancelled' : ''}">${statusLabel}</span>
                             </div>
                         </div>
                         <div class="order-items">
@@ -434,9 +457,49 @@ if (!empty($userName)) {
                             <span>Payment: <b>${order.payment || 'Cash on Delivery'}</b></span>
                             <span class="order-total">Total: ₹${Number(order.total || 0).toLocaleString('en-IN')}</span>
                         </div>
+                        ${canCancel ? `<button class="cancel-order" type="button" data-order-id="${order.id || ''}">Cancel Order</button>` : ''}
                     </div>
                 `;
             }).join('');
+
+            container.querySelectorAll('.cancel-order').forEach(button => {
+                button.addEventListener('click', () => cancelOrder(button.dataset.orderId));
+            });
+
+            async function cancelOrder(orderId) {
+                const order = orders.find(item => String(item.id) === String(orderId));
+                if (!order || !window.confirm('Cancel this order?')) return;
+
+                buttonState(orderId, true);
+                try {
+                    if (Number.isInteger(Number(orderId))) {
+                        const response = await fetch('api/cancel_order.php', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({order_id: Number(orderId)})
+                        });
+                        const result = await response.json();
+                        if (!result.success) throw new Error(result.message || 'Cancellation failed.');
+                    }
+
+                    order.status = 'cancelled';
+                    order.order_status = 'cancelled';
+                    localStorage.setItem('tsa_orders', JSON.stringify(orders));
+                    localStorage.setItem('tsaLastOrder', JSON.stringify(order));
+                    location.reload();
+                } catch (error) {
+                    buttonState(orderId, false);
+                    window.alert(error.message || 'Unable to cancel this order.');
+                }
+            }
+
+            function buttonState(orderId, disabled) {
+                const button = container.querySelector(`[data-order-id="${CSS.escape(String(orderId))}"]`);
+                if (button) {
+                    button.disabled = disabled;
+                    button.textContent = disabled ? 'Cancelling...' : 'Cancel Order';
+                }
+            }
         });
     </script>
 </body>
